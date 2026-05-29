@@ -1,0 +1,125 @@
+@page "/documento"
+@using Syncfusion.Blazor.Camera
+@inject IJSRuntime JS
+
+<PageTitle>Capturar Documento - BlazorXpanduApp</PageTitle>
+
+<h1>Capturar Documento</h1>
+
+<div class="documento-container">
+    <div class="card">
+        <h3>📷 Captura tu documento</h3>
+        <p class="responsive-info">
+            @if (esMovil)
+            {
+                <span>📱 Modo móvil detectado: Usa la cámara de tu dispositivo</span>
+            }
+            else
+            {
+                <span>💻 Modo desktop: Conecta una cámara o usa tu webcam</span>
+            }
+        </p>
+
+        @if (camaraActiva)
+        {
+            <div class="camera-wrapper">
+                <SfCamera @ref="camera" Width="@anchoCamara" Height="@altoCamara" 
+                          ShowControls="true" OnPhotoTaken="OnFotoCapturada"></SfCamera>
+            </div>
+            
+            <div class="button-group mt-3">
+                <SfButton CssClass="e-btn e-success" OnClick="IniciarCamara">📷 Capturar Foto</SfButton>
+                <SfButton CssClass="e-btn e-danger" OnClick="DetenerCamara">⏹ Detener Cámara</SfButton>
+            </div>
+        }
+        else
+        {
+            <SfButton CssClass="e-btn e-primary" OnClick="IniciarCamara">🎥 Activar Cámara</SfButton>
+        }
+
+        @if (!string.IsNullOrEmpty(fotoCapturada))
+        {
+            <div class="card mt-3">
+                <h3>Foto Capturada</h3>
+                <img src="@fotoCapturada" alt="Documento capturado" class="documento-preview" />
+                <div class="button-group mt-3">
+                    <SfButton CssClass="e-btn e-info" OnClick="AnalizarConIA">🤖 Analizar con IA</SfButton>
+                    <SfButton CssClass="e-btn e-warning" OnClick="NuevaCaptura">🔄 Nueva Captura</SfButton>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private SfCamera? camera;
+    private bool camaraActiva = false;
+    private bool esMovil = false;
+    private string anchoCamara = "100%";
+    private string altoCamara = "400px";
+    private string fotoCapturada = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Detectar si es dispositivo móvil
+        esMovil = await JS.InvokeAsync<bool>("eval", 
+            "/Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)");
+        
+        // Ajustar tamaño responsive
+        if (esMovil)
+        {
+            anchoCamara = "100%";
+            altoCamara = "300px";
+        }
+        else
+        {
+            anchoCamara = "640px";
+            altoCamara = "480px";
+        }
+    }
+
+    private async Task IniciarCamara()
+    {
+        camaraActiva = true;
+        await Task.Delay(100); // Esperar a que se renderice el componente
+        
+        if (camera != null)
+        {
+            try
+            {
+                await camera.Start();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al iniciar cámara: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task DetenerCamara()
+    {
+        if (camera != null)
+        {
+            await camera.Stop();
+            camaraActiva = false;
+        }
+    }
+
+    private void OnFotoCapturada(Syncfusion.Blazor.Camera.PhotoTakenEventArgs args)
+    {
+        fotoCapturada = args.ImageData;
+        camaraActiva = false;
+    }
+
+    private async Task AnalizarConIA()
+    {
+        // Navegar a la página de análisis
+        await JS.InvokeVoidAsync("eval", "window.location.href = '/analisis?imagen=' + encodeURIComponent('" + fotoCapturada + "')");
+    }
+
+    private void NuevaCaptura()
+    {
+        fotoCapturada = "";
+        camaraActiva = true;
+    }
+}
