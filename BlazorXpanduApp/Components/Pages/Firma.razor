@@ -1,0 +1,61 @@
+@page "/firma"
+@using Syncfusion.Blazor.Inputs
+@inject IJSRuntime JS
+
+<PageTitle>Firma Electrónica - BlazorXpanduApp</PageTitle>
+
+<h1>Firma Electrónica</h1>
+
+<div class="firma-container">
+    <div class="card">
+        <h3>Firma tu documento</h3>
+        <p>Usa tu mouse, touchpad o pantalla táctil para firmar</p>
+        
+        <SfSignaturePad @ref="signaturePad" Width="600px" Height="300px" 
+                        LineColor="#000000" BackgroundColor="#FFFFFF" 
+                        StrokeWidth="2"></SfSignaturePad>
+        
+        <div class="button-group mt-3">
+            <SfButton CssClass="e-btn e-primary" OnClick="SaveFirma">Guardar Firma</SfButton>
+            <SfButton CssClass="e-btn e-secondary" OnClick="ClearFirma">Limpiar</SfButton>
+        </div>
+    </div>
+
+    @if (firmaGuardada)
+    {
+        <div class="card mt-3">
+            <h3>Firma Guardada</h3>
+            <img src="@firmaImagenUrl" alt="Firma guardada" class="firma-preview" />
+            <p class="mt-2">La firma ha sido guardada exitosamente.</p>
+        </div>
+    }
+</div>
+
+@code {
+    private SfSignaturePad? signaturePad;
+    private bool firmaGuardada = false;
+    private string firmaImagenUrl = "";
+
+    private async Task SaveFirma()
+    {
+        if (signaturePad != null)
+        {
+            var imageData = await signaturePad.GetImageAsync("image/png");
+            firmaImagenUrl = imageData;
+            firmaGuardada = true;
+            
+            // Aquí puedes enviar la imagen al servidor o procesarla
+            Console.WriteLine($"Firma guardada: {imageData.Substring(0, Math.Min(50, imageData.Length))}...");
+        }
+    }
+
+    private async Task ClearFirma()
+    {
+        if (signaturePad != null)
+        {
+            await signaturePad.ClearAsync();
+            firmaGuardada = false;
+            firmaImagenUrl = "";
+        }
+    }
+}

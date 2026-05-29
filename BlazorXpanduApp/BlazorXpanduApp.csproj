@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Syncfusion.Blazor" Version="24.1.41" />
+    <PackageReference Include="Syncfusion.Blazor.Themes" Version="24.1.41" />
+    <PackageReference Include="Syncfusion.Blazor.Buttons" Version="24.1.41" />
+    <PackageReference Include="Syncfusion.Blazor.Inputs" Version="24.1.41" />
+    <PackageReference Include="Syncfusion.Blazor.Popups" Version="24.1.41" />
+    <PackageReference Include="Syncfusion.Blazor.SignaturePad" Version="24.1.41" />
+    <PackageReference Include="Syncfusion.Blazor.Camera" Version="24.1.41" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+</Project>
